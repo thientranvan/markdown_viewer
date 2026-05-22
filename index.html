@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' file: data: https: http:; media-src 'self' file: data: https: http:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self' data:;">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MD Viewer</title>
+    <link rel="stylesheet" href="./node_modules/github-markdown-css/github-markdown-light.css">
+    <link rel="stylesheet" href="./node_modules/@highlightjs/cdn-assets/styles/github.min.css">
+    <link rel="stylesheet" href="./src/styles.css">
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div class="document-meta">
+          <div id="documentTitle" class="document-title">Untitled</div>
+          <div id="documentPath" class="document-path">No file selected</div>
+        </div>
+        <div class="toolbar">
+          <button id="openButton" class="button" type="button" title="Open">
+            <img src="./node_modules/lucide-static/icons/folder-open.svg" alt="">
+            <span>Open</span>
+          </button>
+          <button id="saveButton" class="button primary" type="button" title="Save">
+            <img src="./node_modules/lucide-static/icons/save.svg" alt="">
+            <span>Save</span>
+          </button>
+          <button id="saveAsButton" class="button" type="button" title="Save as">
+            <img src="./node_modules/lucide-static/icons/save-all.svg" alt="">
+            <span>Save As</span>
+          </button>
+          <div class="mode-group" role="group" aria-label="View mode">
+            <button class="mode-button" type="button" data-mode="preview" aria-pressed="false">View</button>
+            <button class="mode-button" type="button" data-mode="split" aria-pressed="true">Split</button>
+            <button class="mode-button" type="button" data-mode="edit" aria-pressed="false">Edit</button>
+          </div>
+        </div>
+      </header>
+
+      <section id="workspace" class="workspace" data-mode="split">
+        <section class="pane editor-pane" aria-label="Markdown editor">
+          <textarea id="editor" class="editor" spellcheck="false" wrap="off"></textarea>
+        </section>
+        <section class="pane preview-pane" aria-label="Markdown preview">
+          <article id="preview" class="markdown-body"></article>
+        </section>
+      </section>
+
+      <footer class="statusbar">
+        <span id="status">Saved - 1 lines - 0 words</span>
+      </footer>
+    </main>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="./node_modules/marked/lib/marked.umd.js"></script>
+    <script src="./node_modules/dompurify/dist/purify.min.js"></script>
+    <script src="./node_modules/@highlightjs/cdn-assets/highlight.min.js"></script>
+    <script src="./src/renderer.js"></script>
+  </body>
+</html>

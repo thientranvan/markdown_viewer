@@ -1,0 +1,43 @@
+{
+  "name": "markdown-viewer",
+  "version": "1.0.0",
+  "description": "Local Electron Markdown viewer/editor for Linux with double-click file association and scroll sync",
+  "main": "src/main.js",
+  "bin": {
+    "mdviewer": "./bin/mdviewer"
+  },
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "test": "npm run check",
+    "check": "node --check src/main.js && node --check src/preload.js && node --check src/renderer.js && node --check scripts/install-desktop.js && node --check scripts/uninstall-desktop.js && node scripts/check.js",
+    "install-desktop": "node scripts/install-desktop.js",
+    "uninstall-desktop": "node scripts/uninstall-desktop.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/thientranvan/markdown_viewer.git"
+  },
+  "keywords": [
+    "markdown",
+    "viewer",
+    "editor",
+    "electron",
+    "linux",
+    "desktop"
+  ],
+  "author": "Thien Tran Van",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thientranvan/markdown_viewer/issues"
+  },
+  "homepage": "https://github.com/thientranvan/markdown_viewer#readme",
+  "dependencies": {
+    "@highlightjs/cdn-assets": "^11.11.1",
+    "dompurify": "^3.4.5",
+    "electron": "^42.2.0",
+    "github-markdown-css": "^5.9.0",
+    "lucide-static": "^1.16.0",
+    "marked": "^18.0.4"
+  }
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="MD Viewer">
+  <rect width="256" height="256" rx="42" fill="#0f766e"/>
+  <rect x="38" y="52" width="180" height="152" rx="14" fill="#ffffff"/>
+  <path d="M66 91h22l25 38 25-38h22v74h-23v-38l-18 27h-12l-18-27v38H66V91z" fill="#17202a"/>
+  <path d="M170 91h22v39h19l-30 35-30-35h19V91z" fill="#e85d3f"/>
+</svg>
