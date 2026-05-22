@@ -5,9 +5,15 @@ const path = require('node:path');
 const { fileURLToPath } = require('node:url');
 
 const appRoot = path.resolve(__dirname, '..');
+const appIcon = path.join(appRoot, 'assets', 'mdviewer.png');
 
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-gpu');
+app.commandLine.appendSwitch('class', 'mdviewer');
+app.setName('MD Viewer');
+if (typeof app.setDesktopName === 'function') {
+  app.setDesktopName('mdviewer.desktop');
+}
 
 let mainWindow = null;
 let pendingOpenPath = null;
@@ -253,6 +259,7 @@ function createWindow(initialFilePath) {
     minWidth: 760,
     minHeight: 520,
     show: false,
+    icon: appIcon,
     backgroundColor: '#f6f7f9',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),

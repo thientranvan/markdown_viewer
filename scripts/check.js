@@ -9,6 +9,7 @@ const requiredFiles = [
   'src/renderer.js',
   'src/styles.css',
   'assets/mdviewer.svg',
+  'assets/mdviewer.png',
   'bin/mdviewer',
   'README.md',
   'LICENSE',
@@ -22,6 +23,7 @@ const requiredFiles = [
   'node_modules/lucide-static/icons/save.svg',
   'node_modules/lucide-static/icons/save-all.svg',
   'scripts/install-desktop.js',
+  'scripts/generate-icon.js',
   'scripts/uninstall-desktop.js'
 ];
 

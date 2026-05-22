@@ -157,6 +157,7 @@ Important files:
 - `src/main.js`: Electron main process, file loading, save dialogs, desktop window lifecycle.
 - `src/preload.js`: safe bridge between Electron and renderer.
 - `src/renderer.js`: editor, Markdown rendering, link handling, scroll sync.
+- `scripts/generate-icon.js`: local PNG icon generator.
 - `scripts/install-desktop.js`: Linux file association installer.
 - `scripts/uninstall-desktop.js`: desktop integration cleanup.
 

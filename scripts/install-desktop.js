@@ -8,7 +8,7 @@ const home = os.homedir();
 const applicationsDir = path.join(home, '.local', 'share', 'applications');
 const desktopFile = path.join(applicationsDir, 'mdviewer.desktop');
 const launcher = path.join(appRoot, 'bin', 'mdviewer');
-const icon = path.join(appRoot, 'assets', 'mdviewer.svg');
+const icon = path.join(appRoot, 'assets', 'mdviewer.png');
 const mimeBaseDir = path.join(home, '.local', 'share', 'mime');
 const mimePackagesDir = path.join(mimeBaseDir, 'packages');
 const mimeXmlFile = path.join(mimePackagesDir, 'mdviewer-markdown.xml');
@@ -47,6 +47,7 @@ const desktopEntry = [
   'Terminal=false',
   'Categories=Utility;TextEditor;',
   'MimeType=text/markdown;text/x-markdown;',
+  'StartupWMClass=mdviewer',
   'StartupNotify=true',
   ''
 ].join('\n');
