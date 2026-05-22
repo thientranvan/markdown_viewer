@@ -31,10 +31,16 @@ sudo apt install xdg-utils libglib2.0-bin desktop-file-utils shared-mime-info
 Clone the repository and install dependencies:
 
 ```bash
-git clone git@github.com:thientranvan/markdown_viewer.git
+git clone https://github.com/thientranvan/markdown_viewer.git
 cd markdown_viewer
 npm install
 npm run check
+```
+
+If you prefer SSH:
+
+```bash
+git clone git@github.com:thientranvan/markdown_viewer.git
 ```
 
 Register Markdown Viewer as the desktop handler for Markdown files:
