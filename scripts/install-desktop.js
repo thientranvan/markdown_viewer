@@ -47,7 +47,7 @@ const desktopEntry = [
   'Terminal=false',
   'Categories=Utility;TextEditor;',
   'MimeType=text/markdown;text/x-markdown;',
-  'StartupWMClass=mdviewer',
+  'StartupWMClass=markdown-viewer',
   'StartupNotify=true',
   ''
 ].join('\n');

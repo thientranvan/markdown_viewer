@@ -9,7 +9,7 @@ const appIcon = path.join(appRoot, 'assets', 'mdviewer.png');
 
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-gpu');
-app.commandLine.appendSwitch('class', 'mdviewer');
+app.commandLine.appendSwitch('class', 'markdown-viewer');
 app.setName('MD Viewer');
 if (typeof app.setDesktopName === 'function') {
   app.setDesktopName('mdviewer.desktop');
