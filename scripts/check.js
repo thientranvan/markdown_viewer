@@ -4,6 +4,11 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const requiredFiles = [
   'index.html',
+  'install.sh',
+  'docs/INSTALL.vi.md',
+  'scripts/install-app.js',
+  'scripts/check-install.js',
+  'scripts/check-browser.js',
   'src/main.js',
   'src/preload.js',
   'src/renderer.js',

@@ -1,190 +1,106 @@
 # Markdown Viewer
 
-Markdown Viewer is a local macOS and Linux desktop app for opening, reading, and editing Markdown files. It is built with Electron and supports Linux registration as the default handler for `.md` files, so double-clicking a Markdown document opens it in a formatted preview.
+Local macOS and Linux app for reading and editing Markdown, with GitHub-style preview, offline LaTeX math, and two-way scroll sync.
 
-## Installation guide for beginners
+## Install or update with one command
 
-**[Hướng dẫn tiếng Việt: cài từng bước trên macOS và Ubuntu/Debian](docs/INSTALL.vi.md)** — includes prerequisites, complete commands, macOS app packaging, updates, usage, and troubleshooting.
+Save documents and quit MD Viewer first. Paste this single line into Terminal:
 
-For macOS installation, follow that guide; the desktop registration commands below are Linux-only.
+```bash
+bash -c 'set -e; command -v curl >/dev/null || { sudo apt-get update; sudo apt-get install -y curl ca-certificates; }; mdviewer_script=$(mktemp); trap "rm -f \"$mdviewer_script\"" EXIT; curl -fsSL https://raw.githubusercontent.com/thientranvan/markdown_viewer/main/install.sh -o "$mdviewer_script"; bash "$mdviewer_script"'
+```
+
+This downloads and executes the installer from this repository after the download succeeds. It installs missing Node.js, verifies its SHA-256, installs locked dependencies, runs `npm audit` and tests, then installs the app and Markdown file associations. Do not run the whole command with `sudo`.
+
+Supports macOS 13.5+ and Ubuntu 22.04+/Debian 12+ desktop, on x64/ARM64. Linux requires sudo for system packages and Electron's root-owned setuid sandbox helper; the app does not disable the sandbox to bypass installation errors. Other platforms are not supported by the automatic installer.
+
+**[Hướng dẫn tiếng Việt cho người không chuyên](docs/INSTALL.vi.md)** — one-command installation, updates, locations, backups, usage, troubleshooting, and uninstalling.
+
+- macOS: installs into `~/Applications/MD Viewer.app`, or updates an existing app with the matching bundle ID in `/Applications` if writable. Includes app icon, ad-hoc signing, and Markdown document registration. The app is not Apple-notarized.
+- Linux: installs into `~/.local/share/md-viewer/app`, adds the application menu entry, and registers `.md`, `.markdown`, `.mdown`, and `.mkd`. The launcher uses the Electron binary directly, including when Node.js was installed through nvm.
+- Existing installations are backed up before replacement; failed replacement/registration restores the previous app. Download, dependency audit, or test failures stop installation before replacement.
+- Run the same command again to update. Your Markdown documents are not deleted.
+
+The macOS installer has been tested directly, including without Node.js in PATH. Linux desktop registration, quoting, and rollback have automated checks; the complete Linux installer has not yet been exercised on a Linux host.
 
 ## Features
 
-- GitHub-style Markdown preview.
-- Offline KaTeX rendering for inline `$...$` and display `$$...$$` math.
-- YAML frontmatter hidden in preview while preserved in the editor. Marp metadata is hidden; Marp slide layout, themes, and custom CSS are not applied.
-- Split view with editable source and selectable preview.
-- Two-way scroll sync between source and preview based on Markdown blocks.
-- Open, save, and save-as support.
-- Open a folder directly; the app opens `README.md` or the first Markdown file it finds.
-- Relative images, media, and Markdown links resolve from the opened file's directory.
-- Syntax highlighting for fenced code blocks.
-- Linux desktop integration through `.desktop`, `xdg-mime`, and `gio`.
+- GitHub-style Markdown preview with syntax highlighting.
+- Inline `$...$` and display `$$...$$` math rendered locally with KaTeX.
+- YAML frontmatter hidden in preview and preserved in the editor. Marp slide layout, themes, and custom CSS are not applied.
+- View, split, and edit modes; two-way scroll sync based on source blocks.
+- Open, save, and save-as; opening a folder selects its `README.md` or first Markdown file.
+- Relative images, media, and Markdown links resolve from the document's directory.
+- Native macOS app and Linux desktop/file association integration.
 
-## Linux requirements
+## Use
 
-- Linux desktop environment that supports freedesktop `.desktop` entries.
-- Node.js 22.12.0 or newer (Node.js 24 LTS recommended). Electron requires this minimum version.
-- npm.
-- `xdg-mime`, `gio`, `update-desktop-database`, and `update-mime-database` for double-click integration.
+Open MD Viewer from Applications or the application menu, or double-click a Markdown document.
 
-Ubuntu/Debian packages usually provide the desktop tools:
+- **Open** selects a document or folder.
+- **Save / Save As** saves the current file or creates another file.
+- **View / Split / Edit** switches the workspace.
+- Split mode keeps the editor and preview aligned while scrolling.
 
-```bash
-sudo apt install xdg-utils libglib2.0-bin desktop-file-utils shared-mime-info
-```
+KaTeX supports a [subset of LaTeX](https://katex.org/docs/supported.html). Code blocks and code spans are not interpreted as math. Frontmatter must be delimited by `---` at the beginning of the file; hiding Marp metadata does not turn the viewer into a slide renderer.
 
-## Install on Linux
+## Development
 
-Clone the repository and install dependencies:
+Node.js 22.12.0 or newer is required; Node.js 24 LTS is recommended. From a cloned repository:
 
 ```bash
-git clone https://github.com/thientranvan/markdown_viewer.git
-cd markdown_viewer
 npm ci
+node -e 'console.log(require("electron"))'
 npm test
+npm start -- samples/demo.md
 ```
 
-If you prefer SSH:
+Recent Electron packages fetch their runtime on first require. To install the current checkout and handle prerequisites with one command:
 
 ```bash
-git clone git@github.com:thientranvan/markdown_viewer.git
+bash install.sh --local "$PWD"
 ```
 
-Register Markdown Viewer as the desktop handler for Markdown files:
+This installs a separate copy without changing or pulling your working tree. To package/install after dependencies and Electron are already present:
 
 ```bash
-npm run install-desktop
+npm run install-app
 ```
 
-After this, double-clicking `.md`, `.markdown`, `.mdown`, or `.mkd` files should open them in Markdown Viewer.
-
-## Usage
-
-Open a file from the terminal:
-
-```bash
-./bin/mdviewer README.md
-```
-
-Open a folder and automatically load its `README.md`:
-
-```bash
-./bin/mdviewer /path/to/project
-```
-
-Run without a file:
-
-```bash
-npm start
-```
-
-Inside the app:
-
-- `Open` selects a Markdown file or folder.
-- `Save` writes changes to the current file.
-- `Save As` writes the document to a new file.
-- `View`, `Split`, and `Edit` switch the workspace mode.
-- In split mode, scrolling either the source or preview keeps the other pane aligned.
-
-## File Association
-
-The install script creates:
-
-- `~/.local/share/applications/mdviewer.desktop`
-- `~/.local/share/mime/packages/mdviewer-markdown.xml`
-
-It then sets:
-
-- `text/markdown -> mdviewer.desktop`
-- `text/x-markdown -> mdviewer.desktop`
-
-Check the current association:
-
-```bash
-xdg-mime query default text/markdown
-xdg-mime query default text/x-markdown
-xdg-mime query filetype README.md
-```
-
-Re-run desktop registration after moving the repository to a new path:
+Linux-only registration for an existing checkout:
 
 ```bash
 npm run install-desktop
 ```
 
-## Uninstall Desktop Integration
+Keep that checkout at the same path, or rerun registration after moving it. Automatic installation uses its own stable directory instead.
 
-Remove the desktop entry and MIME registration owned by this app:
+## Checks
+
+```bash
+npm test
+npm audit
+```
+
+For a real Electron rendering/sanitization check in a desktop session, run `npm run check-browser` (requires the downloaded Electron runtime; not part of headless checks).
+
+Checks cover required assets, source syntax, math/frontmatter rendering, desktop path quoting, backup/rollback, and incomplete installer downloads. An audit result describes known registry advisories at that time; it does not guarantee that all security issues are absent. The installer rejects audit findings at low severity or higher.
+
+Important files:
+
+- `install.sh`: platform detection, prerequisites, verified Node.js download, source/dependency installation, checks.
+- `scripts/install-app.js`: native macOS packaging, Linux app installation, backups and rollback.
+- `scripts/install-desktop.js`: Linux desktop/MIME registration and configuration rollback.
+- `src/main.js`: file loading, saves, dialogs, window lifecycle.
+- `src/preload.js`: bridge between Electron and renderer.
+- `src/renderer.js`: Markdown/math preview, links, scroll sync.
+
+## Uninstall
+
+See the [Vietnamese guide](docs/INSTALL.vi.md#gỡ-cài-đặt) for installation-specific paths. Linux desktop registration can be removed from the installed app or original registered checkout:
 
 ```bash
 npm run uninstall-desktop
 ```
 
-This does not delete the repository or your Markdown files.
-
-## Troubleshooting
-
-If double-click opens an empty document, close any already running Markdown Viewer windows and open the file again. Older app windows may still be running code from before the latest install.
-
-If double-click does not open Markdown Viewer, re-run:
-
-```bash
-npm run install-desktop
-```
-
-If a Markdown file is on an external or NTFS/FUSE mount, verify that Node can read it:
-
-```bash
-node -e "const fs=require('fs'); console.log(fs.readFileSync(process.argv[1], 'utf8').slice(0, 120))" /path/to/file.md
-```
-
-If Electron fails with GPU or Mesa/NVIDIA messages, the app already disables hardware acceleration in `src/main.js`; reinstall dependencies and try again:
-
-```bash
-npm ci
-npm test
-```
-
-## Development
-
-Start the app:
-
-```bash
-npm start -- samples/demo.md
-```
-
-Run checks:
-
-```bash
-npm run check
-```
-
-Important files:
-
-- `src/main.js`: Electron main process, file loading, save dialogs, desktop window lifecycle.
-- `src/preload.js`: safe bridge between Electron and renderer.
-- `src/renderer.js`: editor, Markdown rendering, link handling, scroll sync.
-- `scripts/generate-icon.js`: local PNG icon generator.
-- `scripts/install-desktop.js`: Linux file association installer.
-- `scripts/uninstall-desktop.js`: desktop integration cleanup.
-
-## Update
-
-Save documents and close the app first. From the repository folder:
-
-```bash
-git pull --ff-only
-npm ci
-npm test
-```
-
-On Linux, run `npm run install-desktop` again. On macOS, rebuild and copy the app using the [installation guide](docs/INSTALL.vi.md#macos).
-
-## Repository Description
-
-Suggested GitHub description:
-
-```text
-Local Electron Markdown viewer/editor for Linux with GitHub-style preview, double-click .md file association, save support, and two-way source/preview scroll sync.
-```
+On macOS, quit the app and move it to Trash. Uninstalling desktop integration does not delete your documents.

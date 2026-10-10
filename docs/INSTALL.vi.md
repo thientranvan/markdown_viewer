@@ -1,173 +1,64 @@
-# Cài Markdown Viewer — hướng dẫn cho người không chuyên
+# Cài Markdown Viewer bằng một lệnh
 
-Markdown Viewer mở và chỉnh sửa file `.md`, hiển thị công thức toán và xem song song nội dung gốc với bản trình bày. Cần Internet khi cài; sau đó ứng dụng đọc file và render công thức ngay trên máy, không cần mạng.
+Dành cho người không chuyên. Không cần tự cài Git, Node.js, npm hoặc công cụ đóng gói.
 
-Chọn phần phù hợp: [macOS](#macos) hoặc [Ubuntu/Debian](#ubuntudebian). Windows chưa có hướng dẫn cài được kiểm chứng trong repo.
+## Cài mới hoặc cập nhật
 
-## Cách dùng Terminal
-
-Terminal là cửa sổ nhập lệnh. Sao chép từng khối lệnh bên dưới, dán vào Terminal rồi nhấn Enter. Chờ lệnh chạy xong và xuất hiện dòng nhập lệnh mới trước khi làm bước tiếp theo. Không nhập các dấu ``` bao quanh khối lệnh.
-
-Nếu lệnh báo lỗi, dừng tại bước đó và xem phần xử lý lỗi cuối trang. Với lệnh `sudo`, máy có thể yêu cầu mật khẩu đăng nhập; khi gõ mật khẩu, màn hình không hiện ký tự.
-
-## macOS
-
-### 1. Cài công cụ cần thiết
-
-1. Vào <https://nodejs.org/en/download>, tải bộ cài macOS `.pkg` của **Node.js 24 LTS**, mở file và hoàn thành cài đặt. npm được cài cùng Node.js. Yêu cầu tối thiểu của Electron hiện tại là Node.js **22.12.0**.
-2. Mở Terminal: nhấn Command + Space, nhập `Terminal`, nhấn Enter.
-3. Chạy lệnh sau để cài công cụ của Apple, gồm Git. Nếu máy báo đã cài thì bỏ qua; nếu xuất hiện cửa sổ cài đặt, hoàn thành và chờ cài xong.
+1. Lưu tài liệu và đóng MD Viewer nếu đang mở.
+2. Mở **Terminal**: macOS dùng Command + Space rồi nhập `Terminal`; Ubuntu dùng Ctrl + Alt + T.
+3. Sao chép **toàn bộ dòng lệnh dưới đây**, dán vào Terminal và nhấn Enter. Chờ dòng `MD Viewer installed successfully`.
 
 ```bash
-xcode-select --install
+bash -c 'set -e; command -v curl >/dev/null || { sudo apt-get update; sudo apt-get install -y curl ca-certificates; }; mdviewer_script=$(mktemp); trap "rm -f \"$mdviewer_script\"" EXIT; curl -fsSL https://raw.githubusercontent.com/thientranvan/markdown_viewer/main/install.sh -o "$mdviewer_script"; bash "$mdviewer_script"'
 ```
 
-Đóng Terminal, mở lại, kiểm tra:
+Lệnh này tải và chạy bộ cài từ repo chính thức `thientranvan/markdown_viewer`. Bộ cài chỉ chạy sau khi tải xong; lỗi tải sẽ dừng lệnh. Cần Internet trong lúc cài. Không chạy cả lệnh với `sudo`.
 
-```bash
-node --version
-npm --version
-git --version
-```
+**Trên Linux**, bộ cài có thể hỏi mật khẩu đăng nhập để cài thư viện hệ thống và cấu hình helper sandbox của Electron. Khi gõ mật khẩu, Terminal không hiện ký tự. Helper được đặt chủ sở hữu `root` và quyền `4755` để Electron sử dụng sandbox; bộ cài không dùng `--no-sandbox`. Tài liệu của bạn không bị xóa.
 
-Cả ba lệnh cần hiện số phiên bản. Node.js nên hiện `v24...`.
+Chạy lại **chính lệnh trên** để cập nhật bản mới. Không cần clone repo hoặc gõ thêm lệnh npm.
 
-### 2. Tải mã nguồn và kiểm tra
+## Hệ điều hành hỗ trợ
 
-Chỉ chạy `git clone` lần đầu. Nếu đã có repo, dùng phần cập nhật bên dưới.
+- **macOS 13.5 trở lên**, chip Apple Silicon hoặc Intel 64-bit.
+- **Ubuntu 22.04 trở lên / Debian 12 trở lên**, có giao diện desktop, chip Intel/AMD 64-bit hoặc ARM64, tài khoản có quyền `sudo`.
+- Windows và các bản Linux khác chưa có bộ cài tự động trong repo.
 
-```bash
-mkdir -p "$HOME/dev"
-cd "$HOME/dev"
-git clone https://github.com/thientranvan/markdown_viewer.git
-cd markdown_viewer
-npm ci
-npm test
-```
+Bộ cài macOS đã được chạy trực tiếp, gồm trường hợp không có Node.js trong PATH. Luồng Linux có kiểm thử launcher, đăng ký desktop và khôi phục khi lỗi; chưa chạy toàn bộ trên máy Linux thật.
 
-`npm ci` tải đúng phiên bản thư viện trong repo, có thể mất vài phút. Khi kiểm tra thành công, cuối kết quả có `MD Viewer check passed.` và `Markdown math and frontmatter checks passed.`.
+## Bộ cài tự làm gì?
 
-Chạy thử:
+- Tự nhận diện hệ điều hành và chip.
+- Dùng Node.js có sẵn nếu phiên bản từ 22.12.0; nếu thiếu, tải Node.js 24 LTS chính thức và kiểm tra SHA-256. Không sửa Node.js đang có trên máy.
+- Tải mã nguồn, cài đúng thư viện theo lockfile, kiểm tra lỗ hổng và chạy kiểm thử. Nếu kiểm tra thất bại, dừng trước khi thay ứng dụng.
+- **macOS:** tạo `MD Viewer.app`, icon riêng, ký ad hoc và đăng ký mở Markdown bằng cách nhấp đúp. Không cần Xcode hoặc công cụ đóng gói bên ngoài.
+- **Linux:** cài thư viện hệ thống, ứng dụng, icon, mục menu và đăng ký mở `.md`, `.markdown`, `.mdown`, `.mkd`. Launcher chạy Electron trực tiếp, không phụ thuộc PATH của nvm hoặc Terminal.
+- Giữ bản cũ trong thư mục backup; khôi phục ứng dụng khi bước thay bản/đăng ký thất bại.
 
-```bash
-npm start -- samples/demo.md
-```
+`npm audit` phản ánh các lỗ hổng được registry biết tại thời điểm kiểm tra, không phải bảo đảm ứng dụng không có mọi loại lỗ hổng. Bộ cài dừng nếu audit phát hiện lỗ hổng từ mức low trở lên.
 
-Đóng cửa sổ ứng dụng trước khi đóng gói.
+## Mở ứng dụng và vị trí cài
 
-### 3. Tạo ứng dụng và cài vào máy
+**macOS:** mở `MD Viewer` trong Applications hoặc nhấp đúp file Markdown. Cài mới vào `~/Applications/MD Viewer.app`. Nếu đã có bản đúng bundle ID trong `/Applications` và thư mục này có quyền ghi, bộ cài cập nhật bản đó. Nếu không có quyền ghi, bộ cài giữ nguyên bản hệ thống và cài bản mới vào `~/Applications`; hãy mở đúng bản trong thư mục này.
 
-Lệnh sau tải công cụ đóng gói Electron và tạo ứng dụng phù hợp với chip của máy hiện tại (Apple Silicon hoặc Intel). Không cần tự chọn kiến trúc.
+**Linux:** tìm **MD Viewer** trong menu ứng dụng hoặc nhấp đúp file Markdown. Ứng dụng nằm tại `~/.local/share/md-viewer/app`; giữ thư mục này để app tiếp tục chạy.
 
-```bash
-cd "$HOME/dev/markdown_viewer"
-npx --yes @electron/packager@20.3.0 . "MD Viewer" --platform=darwin --out=dist --overwrite --app-bundle-id=com.thientranvan.markdown-viewer
-```
+Node.js do bộ cài tải, nếu cần, nằm tại `~/.local/share/md-viewer/node`. Bộ cài không sửa cấu hình shell hoặc thay ứng dụng bằng quyền root.
 
-Ứng dụng được cài vào `~/Applications`, là thư mục Applications riêng của tài khoản. Nếu đã có bản cũ tại đây, khối lệnh sau giữ bản sao trước khi cập nhật. Hãy đóng MD Viewer và lưu các tài liệu đang chỉnh sửa trước khi chạy.
-
-```bash
-mkdir -p "$HOME/Applications"
-MDVIEWER_ARCH="$(node -p 'process.arch')"
-MDVIEWER_APP="$HOME/Applications/MD Viewer.app"
-if [ -d "$MDVIEWER_APP" ]; then
-  ditto "$MDVIEWER_APP" "$HOME/Applications/MD Viewer-backup-$(date +%Y%m%d-%H%M%S).app"
-fi
-ditto "dist/MD Viewer-darwin-$MDVIEWER_ARCH/MD Viewer.app" "$MDVIEWER_APP"
-open "$MDVIEWER_APP"
-```
-
-Các biến trong khối lệnh này cần chạy trong cùng cửa sổ Terminal. Có thể mở lại app từ Finder: chọn **Go → Go to Folder**, nhập `~/Applications`, mở **MD Viewer.app**. Nếu máy đã có bản khác trong `/Applications`, mở đúng bản trong `~/Applications` để sử dụng thay đổi mới.
-
-Bản tự đóng gói chưa được Apple notarize. Nếu macOS chặn mở, kiểm tra rằng bạn vừa tạo app từ repo này rồi dùng **System Settings → Privacy & Security → Open Anyway** nếu tùy chọn xuất hiện. Không cần tắt Gatekeeper toàn hệ thống.
-
-Bản đóng gói bằng lệnh trên dùng icon Electron và chưa tự đăng ký mở `.md` bằng cách nhấp đúp. Dùng nút **Open** trong ứng dụng để chọn tài liệu.
-
-## Ubuntu/Debian
-
-Các lệnh dưới đây dành cho Ubuntu/Debian có giao diện desktop; không dành cho máy chủ chỉ có dòng lệnh. Fedora, Arch và các bản Linux khác cần lệnh cài gói tương ứng.
-
-### 1. Cài công cụ hệ thống
-
-Mở Terminal bằng Ctrl + Alt + T:
-
-```bash
-sudo apt update
-sudo apt install -y git curl ca-certificates xdg-utils libglib2.0-bin desktop-file-utils shared-mime-info
-```
-
-### 2. Cài Node.js 24 LTS
-
-Khối lệnh này tải và chạy bộ cài nvm từ repo chính thức `nvm-sh/nvm`. nvm quản lý Node.js trong tài khoản của bạn, không cần `sudo npm`.
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh -o /tmp/mdviewer-nvm-install.sh
-bash /tmp/mdviewer-nvm-install.sh
-export NVM_DIR="$HOME/.nvm"
-. "$NVM_DIR/nvm.sh"
-nvm install 24
-nvm alias default 24
-node --version
-npm --version
-```
-
-### 3. Tải, kiểm tra và đăng ký ứng dụng
-
-```bash
-mkdir -p "$HOME/dev"
-cd "$HOME/dev"
-git clone https://github.com/thientranvan/markdown_viewer.git
-cd markdown_viewer
-npm ci
-npm test
-npm run install-desktop
-npm start -- samples/demo.md
-```
-
-Khi kiểm tra thành công, kết quả có `MD Viewer check passed.` và `Markdown math and frontmatter checks passed.`. Sau đăng ký, tìm **MD Viewer** trong danh sách ứng dụng hoặc nhấp đúp file `.md`, `.markdown`, `.mdown`, `.mkd`.
-
-Giữ thư mục `~/dev/markdown_viewer`: ứng dụng Linux chạy từ đó. Nếu chuyển thư mục, vào vị trí mới và chạy lại `npm run install-desktop`.
-
-Kiểm tra ứng dụng mặc định:
-
-```bash
-xdg-mime query default text/markdown
-xdg-mime query default text/x-markdown
-```
-
-Kết quả mong đợi: `mdviewer.desktop`.
-
-## Cập nhật khi có phiên bản mới
-
-Lưu tài liệu và đóng ứng dụng trước khi cập nhật. Nếu đã tự chỉnh mã nguồn, `git pull --ff-only` có thể dừng để bảo vệ thay đổi; không dùng lệnh xóa hoặc reset để xử lý.
-
-```bash
-cd "$HOME/dev/markdown_viewer"
-git pull --ff-only
-npm ci
-npm test
-```
-
-- **macOS:** chạy lại toàn bộ bước 3 trong phần macOS để đóng gói và thay bản trong `~/Applications`.
-- **Linux:** chạy `npm run install-desktop`, rồi mở lại ứng dụng.
+Backup nằm trong `.md-viewer-backups` ở cùng thư mục cha với app: macOS thường là `~/Applications/.md-viewer-backups` hoặc `/Applications/.md-viewer-backups`; Linux là `~/.local/share/md-viewer/.md-viewer-backups`. Trong Finder có thể nhấn Command + Shift + . để hiện thư mục ẩn. Backup chỉ chứa ứng dụng, không chứa tài liệu Markdown của bạn.
 
 ## Sử dụng
 
 - **Open:** chọn file hoặc thư mục; nếu chọn thư mục, app tìm `README.md` hoặc file Markdown đầu tiên.
-- **Save:** lưu thay đổi vào file hiện tại.
-- **Save As:** lưu thành file khác.
+- **Save / Save As:** lưu file hiện tại / lưu thành file khác.
 - **View / Split / Edit:** xem bản trình bày / xem và chỉnh sửa song song / chỉ chỉnh sửa.
 - Trong **Split**, cuộn một bên sẽ cuộn bên còn lại theo nội dung tương ứng.
 
-Công thức trong dòng:
+Công thức trong dòng và công thức riêng dòng:
 
 ```markdown
 Mật độ electron là $n_{2D}$.
-```
 
-Công thức riêng một dòng hoặc nhiều dòng:
-
-```markdown
 $$ N_D L = n_{2D} $$
 
 $$
@@ -175,7 +66,7 @@ $$
 $$
 ```
 
-KaTeX hỗ trợ tập con của LaTeX; xem <https://katex.org/docs/supported.html>. Công thức không hợp lệ không làm dừng toàn bộ preview. Dấu `$` trong code block hoặc đoạn code trong dấu backtick không được render thành toán.
+KaTeX hỗ trợ tập con của LaTeX: <https://katex.org/docs/supported.html>. Dấu `$` trong code block hoặc đoạn code trong dấu backtick không render thành toán. Công thức lỗi không làm dừng toàn bộ preview.
 
 Metadata Marp/YAML phải nằm ngay đầu file, giữa hai dòng `---`:
 
@@ -192,30 +83,38 @@ style: |
 # KHÍ ELECTRON HAI CHIỀU (2DEG)
 ```
 
-Preview ẩn khối metadata này, editor vẫn giữ nguyên để chỉnh sửa và lưu. App hiện xem như tài liệu Markdown thông thường: chưa áp dụng theme/CSS Marp, chưa chia slide hoặc xuất slide. Nếu bỏ hai dòng `---`, phần cấu hình sẽ xuất hiện như văn bản.
+Preview ẩn metadata, editor giữ nguyên để chỉnh sửa/lưu. App chưa áp dụng theme/CSS Marp, chia slide hoặc xuất slide. Nếu bỏ hai dòng `---`, phần cấu hình hiện như văn bản.
 
-## Xử lý lỗi thường gặp
+## Xử lý lỗi
 
-- **`node: command not found` hoặc `npm: command not found`:** hoàn thành bước cài Node.js, đóng và mở lại Terminal. Trên Linux chạy `. "$HOME/.nvm/nvm.sh"` nếu đang dùng nvm.
-- **Lỗi phiên bản Node.js:** kiểm tra `node --version`, cài Node.js 24 LTS rồi chạy lại `npm ci`.
-- **`destination path ... already exists`:** repo đã có; dùng phần cập nhật thay vì clone lại.
-- **Không tải được thư viện:** kiểm tra Internet/proxy rồi chạy lại `npm ci`. Không dùng `sudo npm ci`.
-- **Lệnh mở app báo Electron chưa cài:** vào đúng `~/dev/markdown_viewer` và chạy `npm ci`.
-- **Linux báo thiếu thư viện hệ thống:** dùng tên thư viện trong thông báo để xác định gói phù hợp với phiên bản Linux; không tắt sandbox bằng `--no-sandbox` để né lỗi.
-- **Linux báo `node` không tìm thấy khi mở từ menu:** Node.js cài bằng nvm có thể chỉ có trong môi trường Terminal. Mở Terminal, chạy `cd "$HOME/dev/markdown_viewer"` rồi `npm start` để dùng ứng dụng; đăng ký desktop không tự cấu hình PATH cho nvm.
-- **Linux nhấp đúp chưa mở đúng app:** đóng cửa sổ app cũ, chạy lại `npm run install-desktop`, kiểm tra với `xdg-mime` ở trên.
-- **Công thức vẫn hiện dạng chữ:** mở bản app mới, kiểm tra cặp dấu `$`/`$$`; khối code không render toán.
-- **CSS/Marp hiện thành chữ:** kiểm tra khối YAML có hai dòng `---` và nằm ngay đầu file.
+- **App còn đang mở:** lưu tài liệu, thoát MD Viewer rồi chạy lại lệnh cài. Bộ cài macOS không buộc đóng ứng dụng để tránh mất nội dung chưa lưu.
+- **Có hai bản app trên macOS:** nếu bản hệ thống không có quyền ghi, bản mới nằm trong `~/Applications`; mở bản đó. Không chạy toàn bộ bộ cài bằng `sudo`.
+- **Lỗi mạng, checksum hoặc tải npm:** kiểm tra Internet/proxy và chạy lại cùng lệnh. Không bỏ qua kiểm tra checksum hoặc audit.
+- **Audit phát hiện lỗ hổng:** chờ bản repo cập nhật thư viện; gửi thông báo audit trên Issues. Không tự dùng `npm audit fix --force` để vượt kiểm tra.
+- **Linux báo không có desktop hoặc sudo:** chạy từ Terminal trong phiên desktop bằng tài khoản có quyền sudo. SSH/máy chủ không giao diện chưa được hỗ trợ.
+- **macOS chặn mở app:** bản tự cài chưa được Apple notarize. Sau khi xác nhận app do chính bộ cài này tạo, dùng **System Settings → Privacy & Security → Open Anyway** nếu tùy chọn xuất hiện. Không tắt Gatekeeper toàn hệ thống.
+- **Công thức/CSS vẫn hiện như chữ:** kiểm tra cặp dấu `$`/`$$`, khối YAML có hai dòng `---` ở đầu file, và mở đúng app mới.
 
-Nếu vẫn lỗi, mở <https://github.com/thientranvan/markdown_viewer/issues>, gửi hệ điều hành, kết quả `node --version`, lệnh đã chạy và thông báo lỗi. Tránh gửi nội dung tài liệu riêng tư.
+Nếu vẫn lỗi, mở <https://github.com/thientranvan/markdown_viewer/issues>, gửi hệ điều hành và toàn bộ thông báo lỗi. Không gửi mật khẩu, token hoặc tài liệu riêng tư.
+
+## Người phát triển đã có repo
+
+Từ thư mục repo, một lệnh cài mã nguồn hiện tại:
+
+```bash
+bash install.sh --local "$PWD"
+```
+
+Lệnh này không pull hoặc thay đổi checkout hiện tại; app được cài độc lập. Sửa mã nguồn rồi chạy lại để cập nhật app.
 
 ## Gỡ cài đặt
 
-Linux: gỡ đăng ký desktop bằng lệnh sau. Lệnh không xóa repo hoặc tài liệu Markdown.
+Linux: gỡ đăng ký desktop bằng Node.js do bộ cài quản lý nếu có:
 
 ```bash
-cd "$HOME/dev/markdown_viewer"
-npm run uninstall-desktop
+"$HOME/.local/share/md-viewer/node/bin/node" "$HOME/.local/share/md-viewer/app/scripts/uninstall-desktop.js"
 ```
 
-macOS: đóng MD Viewer rồi chuyển `~/Applications/MD Viewer.app` vào Trash bằng Finder. Repo và tài liệu của bạn vẫn giữ nguyên; các bản backup có thể giữ để khôi phục.
+Nếu bộ cài đã dùng Node.js có sẵn, thay đường dẫn đầu bằng `node`. Sau đó có thể xóa thư mục app bằng trình quản lý file. Lệnh không xóa tài liệu Markdown.
+
+macOS: đóng MD Viewer rồi chuyển app vào Trash bằng Finder. Các bản backup và tài liệu vẫn giữ nguyên.
