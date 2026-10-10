@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, '..');
 const requiredFiles = [
   'index.html',
   'install.sh',
-  'docs/INSTALL.vi.md',
+  'docs/INSTALL.md',
   'scripts/install-app.js',
   'scripts/check-install.js',
   'scripts/check-browser.js',

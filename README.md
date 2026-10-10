@@ -14,7 +14,7 @@ This downloads and executes the installer from this repository after the downloa
 
 Supports macOS 13.5+ and Ubuntu 22.04+/Debian 12+ desktop, on x64/ARM64. Linux requires sudo for system packages and Electron's root-owned setuid sandbox helper; the app does not disable the sandbox to bypass installation errors. Other platforms are not supported by the automatic installer.
 
-**[Hướng dẫn tiếng Việt cho người không chuyên](docs/INSTALL.vi.md)** — one-command installation, updates, locations, backups, usage, troubleshooting, and uninstalling.
+**[Installation guide](docs/INSTALL.md)** — one-command installation, updates, locations, backups, usage, troubleshooting, and uninstalling.
 
 - macOS: installs into `~/Applications/MD Viewer.app`, or updates an existing app with the matching bundle ID in `/Applications` if writable. Includes app icon, ad-hoc signing, and Markdown document registration. The app is not Apple-notarized.
 - Linux: installs into `~/.local/share/md-viewer/app`, adds the application menu entry, and registers `.md`, `.markdown`, `.mdown`, and `.mkd`. The launcher uses the Electron binary directly, including when Node.js was installed through nvm.
@@ -97,7 +97,7 @@ Important files:
 
 ## Uninstall
 
-See the [Vietnamese guide](docs/INSTALL.vi.md#gỡ-cài-đặt) for installation-specific paths. Linux desktop registration can be removed from the installed app or original registered checkout:
+See the [installation guide](docs/INSTALL.md#uninstall) for installation-specific paths. Linux desktop registration can be removed from the installed app or original registered checkout:
 
 ```bash
 npm run uninstall-desktop
