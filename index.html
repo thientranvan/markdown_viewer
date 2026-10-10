@@ -37,6 +37,10 @@
             <button class="mode-button" type="button" data-mode="split" aria-pressed="true">Split</button>
             <button class="mode-button" type="button" data-mode="edit" aria-pressed="false">Edit</button>
           </div>
+          <button id="exportPdfButton" class="button" type="button" title="Export PDF (Ctrl/Cmd+P)">
+            <img src="./node_modules/lucide-static/icons/file-down.svg" alt="">
+            <span>PDF</span>
+          </button>
         </div>
       </header>
 
@@ -54,6 +58,47 @@
       </footer>
     </main>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <dialog id="pdfDialog" aria-labelledby="pdfDialogTitle" aria-describedby="pdfDescription">
+      <form id="pdfForm">
+        <h2 id="pdfDialogTitle">Export PDF</h2>
+        <p id="pdfDescription">Export the current preview, including unsaved edits.</p>
+        <fieldset id="pdfSettings">
+          <label for="pdfPageSize">Paper size</label>
+          <select id="pdfPageSize" name="pageSize">
+            <option value="A4">A4 (210 × 297 mm)</option>
+            <option value="A3">A3 (297 × 420 mm)</option>
+            <option value="Letter">Letter (216 × 279 mm)</option>
+            <option value="16:9">Widescreen 16:9 (339 × 191 mm)</option>
+            <option value="4:3">Standard 4:3 (254 × 191 mm)</option>
+            <option value="custom">Custom dimensions</option>
+          </select>
+          <div id="pdfCustomSize" hidden>
+            <label for="pdfWidth">Width (mm)</label>
+            <input id="pdfWidth" name="width" type="number" min="50" max="1000" step="0.1" value="320" required disabled>
+            <label for="pdfHeight">Height (mm)</label>
+            <input id="pdfHeight" name="height" type="number" min="50" max="1000" step="0.1" value="180" required disabled>
+          </div>
+          <label for="pdfOrientation">Orientation</label>
+          <select id="pdfOrientation" name="orientation">
+            <option value="portrait">Portrait</option>
+            <option value="landscape">Landscape</option>
+          </select>
+          <label for="pdfScale">Scale (%)</label>
+          <input id="pdfScale" name="scale" type="number" min="25" max="200" value="100" required aria-describedby="pdfScaleHelp">
+          <small id="pdfScaleHelp">100% is original size. Lower values fit more content; higher values enlarge it.</small>
+          <label for="pdfMargin">Margins (mm)</label>
+          <input id="pdfMargin" name="margin" type="number" min="0" max="50" step="0.1" value="12" required>
+          <label class="pdf-checkbox"><input name="background" type="checkbox" checked> Include background colors</label>
+          <label class="pdf-checkbox"><input name="pageBreaks" type="checkbox"> Start a new page at horizontal rules (---)</label>
+          <small>Widescreen presets select landscape and page breaks. Custom dimensions follow the selected orientation. Long sections can span multiple pages.</small>
+        </fieldset>
+        <p id="pdfError" role="alert"></p>
+        <div class="pdf-actions">
+          <button id="pdfCancel" class="button" type="button">Cancel</button>
+          <button id="pdfSubmit" class="button primary" type="submit">Export PDF</button>
+        </div>
+      </form>
+    </dialog>
 
     <script src="./node_modules/marked/lib/marked.umd.js"></script>
     <script src="./node_modules/dompurify/dist/purify.min.js"></script>

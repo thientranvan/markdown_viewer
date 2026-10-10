@@ -88,7 +88,35 @@ style: |
 # TWO-DIMENSIONAL ELECTRON GAS (2DEG)
 ```
 
-The preview hides metadata while the editor preserves it for editing and saving. Marp themes, custom CSS, slide layout, and slide export are not supported. Without the delimiters, configuration appears as document text.
+The preview hides metadata while the editor preserves it for editing and saving. Marp themes, custom CSS, and Marp slide rendering are not supported. Without the delimiters, configuration appears as document text.
+
+## PDF export
+
+1. Open a Markdown document and select **PDF** in the toolbar, **File → Export PDF**, or **Ctrl/Cmd+P**.
+2. Choose paper size, orientation, scale, and margins.
+3. Select **Export PDF**, then choose the destination in the save dialog.
+
+Export uses the current preview, including unsaved edits, formulas, syntax highlighting, and resolved images. The editor, toolbar, and YAML metadata are excluded. Exporting does not save or change the Markdown document.
+
+| Paper size | Dimensions | Default orientation |
+| --- | --- | --- |
+| A4 | 210 × 297 mm | Portrait |
+| A3 | 297 × 420 mm | Portrait |
+| Letter | 215.9 × 279.4 mm | Portrait |
+| Widescreen 16:9 | Approximately 338.7 × 190.5 mm | Landscape |
+| Standard 4:3 | 254 × 190.5 mm | Landscape |
+| Custom | Width and height from 50 to 1000 mm | Current selection |
+
+Orientation determines whether the longer edge is horizontal or vertical, including for custom dimensions. Paper dimensions remain unchanged when changing scale.
+
+- **Scale:** 25–200%. At 100%, text uses its normal print size. Smaller values fit more content; larger values enlarge text and can increase page count.
+- **Margins:** 0–50 mm on every side. Margins must leave at least 10 mm of content space on each axis.
+- **Include background colors:** controls backgrounds in highlighted code and other rendered elements.
+- **Start a new page at horizontal rules (---):** starts each separated section on a new page. The 16:9 and 4:3 presets enable this automatically; it can be changed independently.
+
+Widescreen paper and page breaks provide slide-shaped PDF pages without applying Marp themes or custom CSS. Long sections can span more than one page; reduce scale or edit the section if needed. Images preserve their aspect ratio and are capped to fit the page with room for surrounding text.
+
+The exporter waits for fonts and images. Missing or slow resources produce an error instead of a partial export. Existing PDFs are replaced only after generation and writing succeed; failed exports preserve the existing file. Use the save dialog to confirm replacement when choosing an existing PDF.
 
 ## Troubleshooting
 
@@ -99,6 +127,8 @@ The preview hides metadata while the editor preserves it for editing and saving.
 - **No Linux desktop session or sudo:** run from a Terminal in your desktop session with an account that has sudo access. Headless servers and SSH-only sessions are not supported.
 - **macOS blocks the app:** the locally built app is not Apple-notarized. After verifying that this installer created it, use **System Settings → Privacy & Security → Open Anyway** if available. Do not disable Gatekeeper system-wide.
 - **Formulas or configuration appear as text:** check the `$`/`$$` pairs, the YAML delimiters at the beginning of the file, and that you opened the updated app.
+- **PDF image loading fails:** check relative image paths from the Markdown file's directory and network access for remote images, then retry.
+- **A PDF section spans multiple pages:** reduce export scale, margins, or section length, or choose a larger paper size. Selecting 16:9 sets the paper ratio rather than automatically fitting every section onto one page.
 
 For unresolved problems, open <https://github.com/thientranvan/markdown_viewer/issues> and include your operating system and complete error output. Do not include passwords, tokens, or private documents.
 

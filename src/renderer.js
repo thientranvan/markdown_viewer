@@ -11,6 +11,13 @@
   const openButton = document.getElementById('openButton');
   const saveButton = document.getElementById('saveButton');
   const saveAsButton = document.getElementById('saveAsButton');
+  const exportPdfButton = document.getElementById('exportPdfButton');
+  const pdfDialog = document.getElementById('pdfDialog');
+  const pdfForm = document.getElementById('pdfForm');
+  const pdfSettings = document.getElementById('pdfSettings');
+  const pdfError = document.getElementById('pdfError');
+  const pdfCancel = document.getElementById('pdfCancel');
+  const pdfSubmit = document.getElementById('pdfSubmit');
   const modeButtons = Array.from(document.querySelectorAll('[data-mode]'));
 
   let filePath = null;
@@ -24,6 +31,7 @@
   let scrollLock = null;
   let scrollLockTimer = null;
   let mode = 'split';
+  let pdfBusy = false;
 
   const math = window.markedKatex({ throwOnError: false, trust: false });
   const blockMath = math.extensions.find((extension) => extension.level === 'block');
@@ -483,6 +491,41 @@
     }
   }
 
+  function openPdfDialog() {
+    if (pdfDialog.open || pdfBusy) return;
+    pdfError.textContent = '';
+    pdfDialog.showModal();
+  }
+
+  async function exportPdf(event) {
+    event.preventDefault();
+    if (pdfBusy || !pdfForm.reportValidity()) return;
+    const values = new FormData(pdfForm);
+    const settings = {
+      pageSize: values.get('pageSize'), orientation: values.get('orientation'),
+      scale: Number(values.get('scale')), margin: Number(values.get('margin')),
+      width: Number(values.get('width')), height: Number(values.get('height')),
+      background: values.has('background'), pageBreaks: values.has('pageBreaks')
+    };
+    pdfBusy = true;
+    pdfSettings.disabled = pdfCancel.disabled = pdfSubmit.disabled = exportPdfButton.disabled = true;
+    pdfSubmit.textContent = 'Exporting...';
+    pdfError.textContent = '';
+    try {
+      const result = await api.exportPdf(settings);
+      if (result) {
+        pdfDialog.close();
+        setToast(`Exported ${fileNameFromPath(result.filePath)}`);
+      }
+    } catch (error) {
+      pdfError.textContent = `Export failed: ${error.message.replace(/^Error invoking remote method '[^']+': (?:Error: )?/, '')}`;
+    } finally {
+      pdfBusy = false;
+      pdfSettings.disabled = pdfCancel.disabled = pdfSubmit.disabled = exportPdfButton.disabled = false;
+      pdfSubmit.textContent = 'Export PDF';
+    }
+  }
+
   editor.addEventListener('input', () => {
     setDirty(editor.value !== lastSavedContent);
     scheduleRender();
@@ -519,6 +562,18 @@
   openButton.addEventListener('click', openFromDialog);
   saveButton.addEventListener('click', saveCurrent);
   saveAsButton.addEventListener('click', saveCurrentAs);
+  exportPdfButton.addEventListener('click', openPdfDialog);
+  pdfForm.addEventListener('submit', exportPdf);
+  pdfCancel.addEventListener('click', () => pdfDialog.close());
+  pdfDialog.addEventListener('cancel', (event) => { if (pdfBusy) event.preventDefault(); });
+  pdfForm.elements.pageSize.addEventListener('change', () => {
+    const custom = pdfForm.elements.pageSize.value === 'custom';
+    document.getElementById('pdfCustomSize').hidden = !custom;
+    pdfForm.elements.width.disabled = pdfForm.elements.height.disabled = !custom;
+    const slides = ['16:9', '4:3'].includes(pdfForm.elements.pageSize.value);
+    if (!custom) pdfForm.elements.orientation.value = slides ? 'landscape' : 'portrait';
+    pdfForm.elements.pageBreaks.checked = slides;
+  });
   modeButtons.forEach((button) => {
     button.addEventListener('click', () => setMode(button.dataset.mode));
   });
@@ -531,6 +586,8 @@
       saveCurrent();
     } else if (command === 'save-as') {
       saveCurrentAs();
+    } else if (command === 'export-pdf') {
+      openPdfDialog();
     } else if (command === 'mode-preview') {
       setMode('preview');
     } else if (command === 'mode-split') {
@@ -555,6 +612,9 @@
     } else if (event.key === 'o') {
       event.preventDefault();
       openFromDialog();
+    } else if (event.key === 'p') {
+      event.preventDefault();
+      openPdfDialog();
     }
   });
 
@@ -565,6 +625,12 @@
       content: editor.value,
       dirty
     };
+  };
+
+  window.__mdViewerGetPdfSnapshot = function () {
+    window.clearTimeout(renderTimer);
+    renderMarkdown();
+    return { html: preview.innerHTML, filePath, name: fileName };
   };
 
   setMode(mode);

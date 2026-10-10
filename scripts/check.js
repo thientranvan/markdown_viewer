@@ -10,6 +10,8 @@ const requiredFiles = [
   'scripts/check-install.js',
   'scripts/check-browser.js',
   'src/main.js',
+  'src/pdf.js',
+  'scripts/check-pdf.js',
   'src/preload.js',
   'src/renderer.js',
   'src/styles.css',
@@ -30,6 +32,7 @@ const requiredFiles = [
   'node_modules/lucide-static/icons/folder-open.svg',
   'node_modules/lucide-static/icons/save.svg',
   'node_modules/lucide-static/icons/save-all.svg',
+  'node_modules/lucide-static/icons/file-down.svg',
   'scripts/install-desktop.js',
   'scripts/generate-icon.js',
   'scripts/uninstall-desktop.js'

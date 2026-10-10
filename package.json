@@ -1,6 +1,6 @@
 {
   "name": "markdown-viewer",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Local macOS and Linux Markdown viewer/editor with LaTeX math and scroll sync",
   "main": "src/main.js",
   "bin": {
@@ -10,12 +10,13 @@
     "start": "electron .",
     "dev": "electron .",
     "test": "npm run check",
-    "check": "node --check src/main.js && node --check src/preload.js && node --check src/renderer.js && node --check scripts/generate-icon.js && node --check scripts/install-desktop.js && node --check scripts/uninstall-desktop.js && node scripts/check.js && node scripts/check-rendering.js && node --check scripts/install-app.js && bash -n install.sh && node scripts/check-install.js && node --check scripts/check-browser.js",
+    "check": "node --check src/main.js && node --check src/preload.js && node --check src/renderer.js && node --check scripts/generate-icon.js && node --check scripts/install-desktop.js && node --check scripts/uninstall-desktop.js && node scripts/check.js && node scripts/check-rendering.js && node --check scripts/install-app.js && bash -n install.sh && node scripts/check-install.js && node --check scripts/check-browser.js && node --check src/pdf.js && node scripts/check-pdf.js",
     "generate-icon": "node scripts/generate-icon.js",
     "install-desktop": "node scripts/install-desktop.js",
     "uninstall-desktop": "node scripts/uninstall-desktop.js",
     "install-app": "node scripts/install-app.js",
-    "check-browser": "node scripts/check-browser.js"
+    "check-browser": "node scripts/check-browser.js",
+    "check-pdf": "node scripts/check-pdf.js"
   },
   "repository": {
     "type": "git",

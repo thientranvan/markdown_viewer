@@ -61,6 +61,7 @@ contextBridge.exposeInMainWorld('mdApi', {
   loadFile: (filePath) => ipcRenderer.invoke('file:load', filePath),
   saveFile: (filePath, content) => ipcRenderer.invoke('file:save', { filePath, content }),
   saveAsFile: (content, suggestedPath) => ipcRenderer.invoke('file:save-as', { content, suggestedPath }),
+  exportPdf: (settings) => ipcRenderer.invoke('file:export-pdf', settings),
   askUnsaved: (name) => ipcRenderer.invoke('dialog:unsaved', name),
   setDirty: (dirty) => ipcRenderer.send('app:set-dirty', dirty),
   openExternal: (target) => ipcRenderer.invoke('shell:open-external', target),

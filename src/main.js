@@ -3,6 +3,8 @@ const fsSync = require('node:fs');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { fileURLToPath } = require('node:url');
+const { randomUUID } = require('node:crypto');
+const { getPrintOptions, renderPdf } = require('./pdf');
 
 const appRoot = path.resolve(__dirname, '..');
 const appIcon = path.join(appRoot, 'assets', 'mdviewer.png');
@@ -21,6 +23,7 @@ let pendingPrompt = false;
 let rendererReady = false;
 let allowClose = false;
 let smokePrinted = false;
+let pdfExportBusy = false;
 
 function normalizeInputArg(arg, cwd) {
   if (!arg || arg.startsWith('-')) {
@@ -139,6 +142,12 @@ function createMenu() {
           label: 'Save As...',
           accelerator: 'CmdOrCtrl+Shift+S',
           click: () => mainWindow?.webContents.send('app:command', 'save-as')
+        },
+        { type: 'separator' },
+        {
+          label: 'Export PDF...',
+          accelerator: 'CmdOrCtrl+P',
+          click: () => mainWindow?.webContents.send('app:command', 'export-pdf')
         },
         { type: 'separator' },
         { role: 'quit' }
@@ -332,6 +341,42 @@ ipcMain.handle('file:save-as', async (_event, payload) => {
 
   await fs.writeFile(result.filePath, payload.content, 'utf8');
   return readMarkdownFile(result.filePath);
+});
+
+ipcMain.handle('file:export-pdf', async (event, settings) => {
+  if (event.sender !== mainWindow?.webContents) throw new Error('PDF export is only available from the document window.');
+  getPrintOptions(settings);
+  if (pdfExportBusy) throw new Error('A PDF export is already running.');
+  pdfExportBusy = true;
+  let temporaryFile;
+  try {
+    const snapshot = await event.sender.executeJavaScript('window.__mdViewerGetPdfSnapshot()');
+    const defaultPath = snapshot.filePath
+      ? path.join(path.dirname(snapshot.filePath), `${path.parse(snapshot.filePath).name}.pdf`)
+      : path.join(app.getPath('documents'), 'untitled.pdf');
+    const result = await dialog.showSaveDialog(mainWindow, {
+      title: 'Export PDF', defaultPath, filters: [{ name: 'PDF', extensions: ['pdf'] }],
+      properties: ['showOverwriteConfirmation', 'createDirectory']
+    });
+    if (result.canceled || !result.filePath) return null;
+    const target = /\.pdf$/i.test(result.filePath) ? result.filePath : `${result.filePath}.pdf`;
+    if (target !== result.filePath && fsSync.existsSync(target)) {
+      const overwrite = await dialog.showMessageBox(mainWindow, {
+        type: 'warning', title: 'Replace PDF?', message: `${path.basename(target)} already exists.`,
+        detail: 'Replace this PDF with the exported document?', buttons: ['Replace', 'Cancel'], defaultId: 1, cancelId: 1
+      });
+      if (overwrite.response !== 0) return null;
+    }
+    if (snapshot.filePath && path.resolve(target) === path.resolve(snapshot.filePath)) throw new Error('Choose a PDF path different from the source document.');
+    const pdf = await renderPdf(snapshot.html, settings);
+    temporaryFile = path.join(path.dirname(target), `.${path.basename(target)}.${randomUUID()}.tmp`);
+    await fs.writeFile(temporaryFile, pdf, { flag: 'wx' });
+    await fs.rename(temporaryFile, target);
+    return { filePath: target };
+  } finally {
+    pdfExportBusy = false;
+    if (temporaryFile) await fs.rm(temporaryFile, { force: true });
+  }
 });
 
 ipcMain.handle('dialog:unsaved', async (_event, name) => {
