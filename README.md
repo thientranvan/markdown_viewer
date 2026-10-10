@@ -1,10 +1,18 @@
 # Markdown Viewer
 
-Markdown Viewer is a local Linux desktop app for opening, reading, and editing Markdown files. It is built with Electron and is intended to be installed as the default handler for `.md` files, so double-clicking a Markdown document opens it in a formatted preview.
+Markdown Viewer is a local macOS and Linux desktop app for opening, reading, and editing Markdown files. It is built with Electron and supports Linux registration as the default handler for `.md` files, so double-clicking a Markdown document opens it in a formatted preview.
+
+## Installation guide for beginners
+
+**[Hướng dẫn tiếng Việt: cài từng bước trên macOS và Ubuntu/Debian](docs/INSTALL.vi.md)** — includes prerequisites, complete commands, macOS app packaging, updates, usage, and troubleshooting.
+
+For macOS installation, follow that guide; the desktop registration commands below are Linux-only.
 
 ## Features
 
 - GitHub-style Markdown preview.
+- Offline KaTeX rendering for inline `$...$` and display `$$...$$` math.
+- YAML frontmatter hidden in preview while preserved in the editor. Marp metadata is hidden; Marp slide layout, themes, and custom CSS are not applied.
 - Split view with editable source and selectable preview.
 - Two-way scroll sync between source and preview based on Markdown blocks.
 - Open, save, and save-as support.
@@ -13,10 +21,10 @@ Markdown Viewer is a local Linux desktop app for opening, reading, and editing M
 - Syntax highlighting for fenced code blocks.
 - Linux desktop integration through `.desktop`, `xdg-mime`, and `gio`.
 
-## Requirements
+## Linux requirements
 
 - Linux desktop environment that supports freedesktop `.desktop` entries.
-- Node.js 20 or newer.
+- Node.js 22.12.0 or newer (Node.js 24 LTS recommended). Electron requires this minimum version.
 - npm.
 - `xdg-mime`, `gio`, `update-desktop-database`, and `update-mime-database` for double-click integration.
 
@@ -26,15 +34,15 @@ Ubuntu/Debian packages usually provide the desktop tools:
 sudo apt install xdg-utils libglib2.0-bin desktop-file-utils shared-mime-info
 ```
 
-## Install
+## Install on Linux
 
 Clone the repository and install dependencies:
 
 ```bash
 git clone https://github.com/thientranvan/markdown_viewer.git
 cd markdown_viewer
-npm install
-npm run check
+npm ci
+npm test
 ```
 
 If you prefer SSH:
@@ -131,11 +139,11 @@ If a Markdown file is on an external or NTFS/FUSE mount, verify that Node can re
 node -e "const fs=require('fs'); console.log(fs.readFileSync(process.argv[1], 'utf8').slice(0, 120))" /path/to/file.md
 ```
 
-If Electron fails with GPU or Mesa/NVIDIA messages, the app already disables hardware acceleration in `src/main.js`; update dependencies and try again:
+If Electron fails with GPU or Mesa/NVIDIA messages, the app already disables hardware acceleration in `src/main.js`; reinstall dependencies and try again:
 
 ```bash
-npm install
-npm run check
+npm ci
+npm test
 ```
 
 ## Development
@@ -160,6 +168,18 @@ Important files:
 - `scripts/generate-icon.js`: local PNG icon generator.
 - `scripts/install-desktop.js`: Linux file association installer.
 - `scripts/uninstall-desktop.js`: desktop integration cleanup.
+
+## Update
+
+Save documents and close the app first. From the repository folder:
+
+```bash
+git pull --ff-only
+npm ci
+npm test
+```
+
+On Linux, run `npm run install-desktop` again. On macOS, rebuild and copy the app using the [installation guide](docs/INSTALL.vi.md#macos).
 
 ## Repository Description
 

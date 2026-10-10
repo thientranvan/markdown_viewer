@@ -25,6 +25,12 @@
   let scrollLockTimer = null;
   let mode = 'split';
 
+  const math = window.markedKatex({ throwOnError: false, trust: false });
+  const blockMath = math.extensions.find((extension) => extension.level === 'block');
+  const renderBlockMath = blockMath.renderer;
+  blockMath.renderer = (token) => addSourceAttributes(renderBlockMath(token), token);
+  getParser().use(math);
+
   function countNewlines(value) {
     const matches = value.match(/\n/g);
     return matches ? matches.length : 0;
@@ -239,12 +245,16 @@
 
   function renderMarkdownToHtml(markdown, parser) {
     const options = {
+      ...parser.defaults,
       gfm: true,
       breaks: false,
       pedantic: false
     };
-    const tokens = parser.lexer(markdown, options);
-    annotateTokenLines(tokens, 1);
+    // ponytail: hide delimited YAML metadata; use Marp Core when slide rendering is needed.
+    const frontmatter = markdown.match(/^\uFEFF?---[ \t]*\r?\n[\s\S]*?\r?\n(?:---|\.\.\.)[ \t]*(?:\r?\n|$)/);
+    const body = frontmatter ? markdown.slice(frontmatter[0].length) : markdown;
+    const tokens = parser.lexer(body, options);
+    annotateTokenLines(tokens, 1 + (frontmatter ? countNewlines(frontmatter[0]) : 0));
 
     return parser.Parser.parse(tokens, {
       ...options,
@@ -324,7 +334,7 @@
 
     const rawHtml = renderMarkdownToHtml(editor.value, parser);
     const cleanHtml = window.DOMPurify.sanitize(rawHtml, {
-      USE_PROFILES: { html: true },
+      USE_PROFILES: { html: true, mathMl: true, svg: true },
       ADD_ATTR: ['checked', 'disabled', 'target', 'rel', 'data-source-start', 'data-source-end']
     });
 

@@ -10,7 +10,7 @@
     "start": "electron .",
     "dev": "electron .",
     "test": "npm run check",
-    "check": "node --check src/main.js && node --check src/preload.js && node --check src/renderer.js && node --check scripts/generate-icon.js && node --check scripts/install-desktop.js && node --check scripts/uninstall-desktop.js && node scripts/check.js",
+    "check": "node --check src/main.js && node --check src/preload.js && node --check src/renderer.js && node --check scripts/generate-icon.js && node --check scripts/install-desktop.js && node --check scripts/uninstall-desktop.js && node scripts/check.js && node scripts/check-rendering.js",
     "generate-icon": "node scripts/generate-icon.js",
     "install-desktop": "node scripts/install-desktop.js",
     "uninstall-desktop": "node scripts/uninstall-desktop.js"
@@ -38,7 +38,9 @@
     "dompurify": "^3.4.5",
     "electron": "^42.2.0",
     "github-markdown-css": "^5.9.0",
+    "katex": "^0.18.10",
     "lucide-static": "^1.16.0",
-    "marked": "^18.0.4"
+    "marked": "^18.0.4",
+    "marked-katex-extension": "^5.1.13"
   }
 }
